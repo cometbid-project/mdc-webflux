@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" shutdownHook="disable"
+	monitorInterval="30">
+
+	<!-- Logging Properties -->
+	<Properties>
+		<property name="app.name">$${spring:spring.application.name}</property>
+		<property name="zip.service.name">$${spring:spring.zipkin.service.name}</property>
+		<Property name="ZIP_LOG_PATTERN">$${date:dd-MMM-yyyy}.log</Property>
+		<Property name="CONSOLE_LOG_PATTERN">
+			%highlight{%d{HH:mm:ss.SSS} %style{${sys:PID}}{magenta} [%t %tid]
+			%highlight{${LOG_LEVEL_PATTERN:-%5p}}{FATAL=red blink, ERROR=red,
+			WARN=yellow bold, INFO=blue, DEBUG=green bold, TRACE=black}
+			[${zip.service.name}:${app.name}:-, trace id:
+			%X{X-B3-TraceId},%X{X-B3-SpanId},%X{X-B3-ParentSpanId},%X{X-Span-Export}:-]
+			%style{%logger{40}}{cyan}.%M @%L -
+			%msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}
+		</Property>
+		<Property name="FILE_LOG_PATTERN">
+			%d{yyyy-MM-dd HH:mm:ss.SSS} ${sys:PID} [%t %tid] [%10.5t] %-5level:
+			[${zip.service.name}:${app.name}:-, trace id:
+			%X{X-B3-TraceId},%X{X-B3-SpanId},%X{X-B3-ParentSpanId},%X{X-Span-Export}:-]
+			%logger{40} - %msg%n%throwable-->
+		</Property>
+		<Property name="APP_LOG_ROOT">c:/logs</Property>
+	</Properties>
+
+	<Appenders>
+		<!-- Console Appender -->
+		<Console name="Console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout pattern="${CONSOLE_LOG_PATTERN}" />
+		</Console>
+
+		<!-- File Appenders on need basis -->
+		<RollingFile name="frameworkLog"
+			fileName="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-framework.log"
+			filePattern="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-framework-%d{yyyy-MM-dd}-%i.log">
+			<LevelRangeFilter minLevel="ERROR" maxLevel="ERROR"
+				onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="${FILE_LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+
+		<RollingFile name="debugLog"
+			fileName="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-debug.log"
+			filePattern="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-debug-%d{yyyy-MM-dd}-%i.log">
+			<LevelRangeFilter minLevel="DEBUG" maxLevel="DEBUG"
+				onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="${FILE_LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+
+		<RollingFile name="infoLog"
+			fileName="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-info.log"
+			filePattern="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-info-%d{yyyy-MM-dd}-%i.log">
+			<LevelRangeFilter minLevel="INFO" maxLevel="INFO"
+				onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="${FILE_LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20" />
+		</RollingFile>
+
+		<RollingFile name="errorLog"
+			fileName="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-error.log"
+			filePattern="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-error-%d{yyyy-MM-dd}-%i.log">
+			<LevelRangeFilter minLevel="ERROR" maxLevel="ERROR"
+				onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="${FILE_LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20" />
+		</RollingFile>
+
+		<RollingFile name="perfLog"
+			fileName="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-perf.log"
+			filePattern="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-perf-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="${FILE_LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20" />
+		</RollingFile>
+
+		<RollingFile name="traceLog"
+			fileName="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-trace.log"
+			filePattern="${APP_LOG_ROOT}/${ZIP_LOG_PATTERN}/app-trace-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="${FILE_LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20" />
+		</RollingFile>
+
+		<Async name="ASYNC">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="perfLog" />
+			<AppenderRef ref="errorLog" />
+			<AppenderRef ref="infoLog" />
+			<AppenderRef ref="debugLog" />
+			<AppenderRef ref="traceLog" />
+		</Async>
+
+	</Appenders>
+
+	<Loggers>  <!-- <Logger name="com.example.howtodoinjava" additivity="false" level="trace"> 
+			<AppenderRef ref="traceLog" /> <AppenderRef ref="Console" /> </Logger> <Logger 
+			name="com.example.howtodoinjava" additivity="false" level="info"> <AppenderRef 
+			ref="infoLog" /> <AppenderRef ref="Console" /> </Logger> <Logger name="com.example.howtodoinjava" 
+			additivity="false" level="debug"> <AppenderRef ref="debugLog" /> <AppenderRef 
+			ref="Console" /> </Logger> -->
+
+		<Logger name="com.ndportmann.mdc_webflux" additivity="false"
+			level="debug">
+			<AppenderRef ref="ASYNC" />
+		</Logger>
+
+		<Root level="info">
+			<AppenderRef ref="ASYNC" />
+		</Root>
+
+	</Loggers>
+</Configuration>

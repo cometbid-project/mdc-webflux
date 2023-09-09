@@ -1,0 +1,8 @@
+#disabling cache for the development purpose
+#spring.template.cache: false
+#spring.thymeleaf.cache: false
+#spring.thymeleaf.enabled: true
+spring.thymeleaf.reactive.max-chunk-size: 8192
+
+#spring.web.resources.chain.strategy.content.enabled: true
+#spring.web.resources.chain.strategy.content.paths: /**
