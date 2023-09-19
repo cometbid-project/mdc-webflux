@@ -9,7 +9,4 @@ package com.ndportmann.mdc_webflux.error.model;
  *
  */
 
-public abstract class ApiResponse {
-
-	
-}
+public abstract class ApiResponse {}

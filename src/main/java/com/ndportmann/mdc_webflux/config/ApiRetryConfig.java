@@ -22,16 +22,16 @@ public class ApiRetryConfig {
 
 	public static RetryBackoffSpec retryWhenTooManyRequests() { 
 		 return Retry.backoff(4, Duration.ofSeconds(2)) 
-		 .filter(this::isTooManyRequestsException) 
-		 .doBeforeRetry(this::logRetryAttemptsWithErrorMessage) 
+		 .filter(ApiRetryConfig::isTooManyRequestsException) 
+		 .doBeforeRetry(ApiRetryConfig::logRetryAttemptsWithErrorMessage) 
 		 .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure()); 
 	}
 	
-	private boolean isTooManyRequestsException(final Throwable throwable) { 
+	private static boolean isTooManyRequestsException(final Throwable throwable) { 
 		 return throwable instanceof WebClientResponseException.TooManyRequests; 
 	} 
 	
-	private Consumer<RetrySignal> logRetryAttemptsWithErrorMessage(Retry.RetrySignal retrySignal) {
+	private static Consumer<RetrySignal> logRetryAttemptsWithErrorMessage(Retry.RetrySignal retrySignal) {
 		return retrySignals -> {
 			log.error("Retrying:" + retrySignal.totalRetries() + ";"
 					+ retrySignal.totalRetriesInARow() + ";" 

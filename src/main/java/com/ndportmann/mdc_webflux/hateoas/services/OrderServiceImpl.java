@@ -37,10 +37,10 @@ public class OrderServiceImpl implements OrderService {
 
 		customerTwoOrderMap.put("002B", new Order("002B", 550.00, 325));
 		customerTwoOrderMap.put("002B", new Order("002B", 450.00, 525));
-
-		final CustomerVO customerOne = new CustomerVO("10A", "Jane", "ABC Company");
-		final CustomerVO customerTwo = new CustomerVO("20B", "Bob", "XYZ Company");
-		final CustomerVO customerThree = new CustomerVO("30C", "Tim", "CKV Company");
+		
+		final CustomerVO customerOne = new CustomerVO("10A", "Jane", "Abe", null, "ABC Company", null);
+		final CustomerVO customerTwo = new CustomerVO("20B", "Bob", "Markifi", null, "XYZ Company", null);
+		final CustomerVO customerThree = new CustomerVO("30C", "Tim", "Antonio", null, "CKV Company", null);	
 
 		customerOne.setOrders(customerOneOrderMap);
 		customerTwo.setOrders(customerTwoOrderMap);

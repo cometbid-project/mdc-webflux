@@ -41,7 +41,7 @@ class AuthRestClient {
 
 	private final ReactiveClientInterface clientInterface;
 
-	@Autowired
+	//@Autowired
 	public AuthRestClient(ReactiveClientInterface clientInterface) {
 		this.clientInterface = clientInterface;
 	}
@@ -268,7 +268,7 @@ class AuthRestClient {
 	private MultiValueMap<String, HttpEntity<?>> sampleBuilder() throws IOException {
 
 		MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-
+		
 		bodyBuilder.part("profileImage", new ClassPathResource("test-image.jpg").getFile())
 				.header("Content-Disposition", "form-data; name=profileImage; filename=profile-image.jpg");
 

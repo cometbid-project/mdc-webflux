@@ -30,9 +30,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 		customerMap = new HashMap<>();
 
-		final CustomerVO customerOne = new CustomerVO("10A", "Jane", "ABC Company");
-		final CustomerVO customerTwo = new CustomerVO("20B", "Bob", "XYZ Company");
-		final CustomerVO customerThree = new CustomerVO("30C", "Tim", "CKV Company");
+		final CustomerVO customerOne = new CustomerVO("10A", "Jane", "Abe", null, "ABC Company", null);
+		final CustomerVO customerTwo = new CustomerVO("20B", "Bob", "Markifi", null, "XYZ Company", null);
+		final CustomerVO customerThree = new CustomerVO("30C", "Tim", "Antonio", null, "CKV Company", null);
 
 		customerMap.put("10A", customerOne);
 		customerMap.put("20B", customerTwo);

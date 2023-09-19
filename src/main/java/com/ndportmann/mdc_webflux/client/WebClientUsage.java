@@ -30,7 +30,6 @@ import org.springframework.web.util.UriBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.google.common.collect.Maps;
 import com.ndportmann.mdc_webflux.config.ApiRetryConfig;
 import com.ndportmann.mdc_webflux.config.AuthClientProperties;
 import com.ndportmann.mdc_webflux.error.handler.ErrorPublisher;

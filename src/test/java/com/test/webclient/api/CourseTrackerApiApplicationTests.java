@@ -35,26 +35,40 @@ class CourseTrackerApiApplicationTests {
 
 	@BeforeEach
 	void beforeEach() {
-		this.webTestClient = WebTestClient.bindToController(new RestfulCourseController(courseRepository)).configureClient()
+		this.webTestClient = WebTestClient.bindToController(new RestfulCourseController(courseRepository))
+				.configureClient()
 				.baseUrl("/courses/").build();
-		this.expectedCourses = courseRepository.findAll().collectList().block();
+		
+		this.expectedCourses = courseRepository
+						.findAll().collectList().block();
 	}
 
 	@Test
 	void testGetAllCourses() {
-		this.webTestClient.get().exchange().expectStatus().isOk().expectHeader().contentType(MediaType.APPLICATION_JSON)
-				.expectBodyList(Course.class).isEqualTo(expectedCourses);
+		this.webTestClient.get().exchange()
+				.expectStatus()
+				.isOk()
+				.expectHeader()
+				.contentType(MediaType.APPLICATION_JSON)
+				.expectBodyList(Course.class)
+				.isEqualTo(expectedCourses);
 	}
 
 	@Test
 	void testInvalidCoursesId() {
-		this.webTestClient.get().uri("/123").exchange().expectStatus().isNotFound();
+		this.webTestClient.get()
+				.uri("/123").exchange()
+				.expectStatus()
+				.isNotFound();
 	}
 
 	@Test
 	void testValidCoursesId() {
 		Course course1 = expectedCourses.get(0);
-		this.webTestClient.get().uri("/{id}", course1.getId()).exchange().expectStatus().isOk().expectBody(Course.class)
+		this.webTestClient.get().uri("/{id}", course1.getId()).exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(Course.class)
 				.isEqualTo(course1);
 	}
 

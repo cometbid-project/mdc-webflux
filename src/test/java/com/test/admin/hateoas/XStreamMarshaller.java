@@ -28,7 +28,6 @@ public final class XStreamMarshaller implements IMarshaller {
     }
 
     // API
-
     @Override
     public final <T> String encode(final T resource) {
         Preconditions.checkNotNull(resource);

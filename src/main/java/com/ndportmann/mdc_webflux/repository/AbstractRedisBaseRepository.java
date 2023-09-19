@@ -7,8 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 import org.springframework.dao.DuplicateKeyException;
@@ -17,8 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
-import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
-import org.springframework.data.repository.query.FluentQuery.ReactiveFluentQuery;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.util.Assert;
 import com.ndportmann.mdc_webflux.helpers.ObjectMapperUtils;

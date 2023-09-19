@@ -7,6 +7,9 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -67,7 +70,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				})
 				//
 				.headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToFlux(clientResponse -> clientResponse.bodyToFlux(clazzResponse));
@@ -97,7 +100,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				})
 				//
 				.headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToMono(clientResponse -> processResponse(clientResponse, clazzResponse));
@@ -126,7 +129,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				.queryParams(params).build())
 				//
 				.headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToMono(clientResponse -> processResponse(clientResponse, clazzResponse));
@@ -146,7 +149,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 
 		return webClient.get().uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost())
 				.port(uri.getPort()).path(uri.getPath()).queryParams(params).build()).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToFlux(clientResponse -> clientResponse.bodyToFlux(clazzResponse));
@@ -167,7 +170,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 
 		return webClient.post().uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost())
 				.port(uri.getPort()).path(uri.getPath()).queryParams(params).build()).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).body(BodyInserters.fromValue(requestBody))
@@ -191,7 +194,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				.uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost()).port(uri.getPort())
 						.path(uri.getPath()).queryParams(params).build())
 				.body(BodyInserters.fromValue(requestBody)).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToMono(clientResponse -> processResponse(clientResponse, clazzResponse));
@@ -214,7 +217,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				.uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost()).port(uri.getPort())
 						.path(uri.getPath()).queryParams(params).build())
 				.body(BodyInserters.fromFormData(formData)).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).accept(MediaType.APPLICATION_JSON).acceptCharset(StandardCharsets.UTF_8)
@@ -238,7 +241,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				.uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost()).port(uri.getPort())
 						.path(uri.getPath()).queryParams(params).build())
 				.body(requestBody, clazzRequest).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToMono(clientResponse -> processResponse(clientResponse, clazzResponse));
@@ -261,7 +264,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				.uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost()).port(uri.getPort())
 						.path(uri.getPath()).queryParams(params).build())
 				.body(requestBody, clazzRequest).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToMono(clientResponse -> processResponse(clientResponse, clazzResponse));
@@ -281,7 +284,7 @@ public class MyReactiveClient implements ReactiveClientInterface {
 
 		return webClient.delete().uri(uriBuilder -> uriBuilder.scheme(uri.getScheme()).host(uri.getHost())
 				.port(uri.getPort()).path(uri.getPath()).queryParams(params).build()).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).exchangeToMono(clientResponse -> processResponse(clientResponse, clazzResponse));
@@ -306,11 +309,11 @@ public class MyReactiveClient implements ReactiveClientInterface {
 				.uri(uriBuilder -> uriBuilder.path(path).queryParams(params).build(templateVar))
 				// .header("X-B3-TRACEID", ThreadContext.get("X-B3-TRACEID"))
 				.headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).cookies(cookie -> {
-					if (listOfCookies != null) {
+					if (CollectionUtils.isNotEmpty(listOfCookies)) {
 						listOfCookies.forEach(p -> cookie.add(p.name(), p.value()));
 					}
 				}).retrieve();
@@ -339,11 +342,11 @@ public class MyReactiveClient implements ReactiveClientInterface {
 		ResponseSpec responseSpec = webClient.method(methodType)
 				.uri(uriBuilder -> uriBuilder.path(path).queryParams(params).build(templateVar))
 				.body(BodyInserters.fromValue(requestBody)).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).cookies(cookie -> {
-					if (listOfCookies != null) {
+					if (CollectionUtils.isNotEmpty(listOfCookies)) {
 						listOfCookies.forEach(p -> cookie.add(p.name(), p.value()));
 					}
 				}).retrieve();
@@ -373,11 +376,11 @@ public class MyReactiveClient implements ReactiveClientInterface {
 		ResponseSpec responseSpec = webClient.method(methodType)
 				.uri(uriBuilder -> uriBuilder.path(path).queryParams(params).build(templateVar))
 				.body(monoData, clazzRequest).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).cookies(cookie -> {
-					if (listOfCookies != null) {
+					if (CollectionUtils.isNotEmpty(listOfCookies)) {
 						listOfCookies.forEach(p -> cookie.add(p.name(), p.value()));
 					}
 				}).retrieve();
@@ -406,11 +409,11 @@ public class MyReactiveClient implements ReactiveClientInterface {
 		ResponseSpec responseSpec = webClient.method(methodType)
 				.uri(uriBuilder -> uriBuilder.path(path).build(templateVar)).body(BodyInserters.fromFormData(formData))
 				.headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).cookies(cookie -> {
-					if (listOfCookies != null) {
+					if (CollectionUtils.isNotEmpty(listOfCookies)) {
 						listOfCookies.forEach(p -> cookie.add(p.name(), p.value()));
 					}
 				}).retrieve();
@@ -441,11 +444,11 @@ public class MyReactiveClient implements ReactiveClientInterface {
 
 		ResponseSpec responseSpec = webClient.method(methodType)
 				.uri(uriBuilder -> uriBuilder.path(path).build(templateVar)).body(multipartData).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).cookies(cookie -> {
-					if (listOfCookies != null) {
+					if (CollectionUtils.isNotEmpty(listOfCookies)) {
 						listOfCookies.forEach(p -> cookie.add(p.name(), p.value()));
 					}
 				}).retrieve();
@@ -467,11 +470,11 @@ public class MyReactiveClient implements ReactiveClientInterface {
 
 		ResponseSpec responseSpec = webClient.delete()
 				.uri(uriBuilder -> uriBuilder.path(path).queryParams(params).build(templateVar)).headers(headers -> {
-					if (headerFields != null) {
+					if (MapUtils.isNotEmpty(headerFields)) {
 						headers.putAll(headerFields);
 					}
 				}).cookies(cookie -> {
-					if (listOfCookies != null) {
+					if (CollectionUtils.isNotEmpty(listOfCookies)) {
 						listOfCookies.forEach(p -> cookie.add(p.name(), p.value()));
 					}
 				}).retrieve();

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.2</version>
+		<version>3.2.0-M2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -156,12 +156,6 @@
 			<groupId>dev.samstevens.totp</groupId>
 			<artifactId>totp</artifactId>
 			<version>${samstevens.totp.version}</version>
-		</dependency>
-		<!-- FOR XML Marshalling / -->
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-log4j2 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-log4j2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -345,21 +339,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<!-- 
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		    -->
+			</plugin>			
 		</plugins>
 	</build>
 

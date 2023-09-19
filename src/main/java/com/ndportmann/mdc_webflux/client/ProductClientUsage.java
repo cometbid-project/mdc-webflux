@@ -38,7 +38,7 @@ public class ProductClientUsage {
 	
 	Scheduler scheduler = Schedulers.newBoundedElastic(5, 10, "MyThreadGroup");
 
-	@Autowired
+	//@Autowired
 	public ProductClientUsage(@Qualifier("productWebClient") WebClient webClient) {
 
 		this.webClient = webClient;

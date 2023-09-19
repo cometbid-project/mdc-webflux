@@ -180,21 +180,16 @@ public class RedisPersistenceTests {
 		String password = faker.internet().password();
 
 		UserData userA = new UserData(firstName, lastName, username, email, password);
-		UserData userB = new UserData(firstName, lastName, username, faker.internet().emailAddress(), password); // using
-																													// the
-																													// same
-																													// username
-																													// as
-																													// savedUser
+		// using the same username as savedUser
+		UserData userB = new UserData(firstName, lastName, username, faker.internet().emailAddress(), password); 
 
 		// Verify that we have error due to duplicate username
 		StepVerifier.create(repository.save(userA).and(repository.save(userB))).expectError(DuplicateKeyException.class)
 				.verify();
 
 		// Same email will fail because email should be unique
-		UserData userC = new UserData(firstName, lastName, faker.name().username(), email, password); // using the same
-																										// email as
-																										// savedUser
+		// using the same email as savedUser
+		UserData userC = new UserData(firstName, lastName, faker.name().username(), email, password); 
 
 		// Verify that we have error due to duplicate email
 		StepVerifier.create(repository.save(userA).and(repository.save(userC))).expectError(DuplicateKeyException.class)
