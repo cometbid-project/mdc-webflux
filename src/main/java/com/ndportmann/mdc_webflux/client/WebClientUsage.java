@@ -6,23 +6,23 @@ package com.ndportmann.mdc_webflux.client;
 import java.net.URI;
 import java.net.http.HttpTimeoutException;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
@@ -43,7 +43,6 @@ import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClientRequest;
 import reactor.util.retry.Retry;
-import reactor.util.retry.Retry.RetrySignal;
 import reactor.util.retry.RetryBackoffSpec;
 
 /**
@@ -61,6 +60,9 @@ public class WebClientUsage {
 	private final ObjectMapper objectMapper;
 	private int maxRetries;
 	private long minBackoff;
+	
+	Predicate<HttpStatusCode> status5xxPredicate = statusCode -> statusCode.is5xxServerError();
+	Predicate<HttpStatusCode> status4xxPredicate = statusCode -> statusCode.is5xxServerError();
 
 	
 	public WebClientUsage(@Qualifier("webClientOauth") WebClient webClient, 
@@ -146,7 +148,8 @@ public class WebClientUsage {
 	 */
 	public void makeGetCallWithCustomErrorHandler() {
 
-		webClient.get().uri("https://baeldung.com/path").retrieve().onStatus(HttpStatus::is4xxClientError, resp -> {
+		webClient.get().uri("https://baeldung.com/path").retrieve()
+		.onStatus(status4xxPredicate, resp -> {
 			log.error("ClientError {}", resp.statusCode());
 			return Mono.error(new RuntimeException("ClientError"));
 		}).bodyToFlux(JsonNode.class).timeout(Duration.ofSeconds(5))
@@ -185,12 +188,12 @@ public class WebClientUsage {
 	public Mono<String> getDataWithFilterException(String stockId) {
 
 		return webClient.get().uri("https://baeldung.com/path", stockId).retrieve()
-				.onStatus(HttpStatus::is5xxServerError,
+				.onStatus(status5xxPredicate,
 						response -> ErrorPublisher.raiseServiceUnavailableError("server.error",
-								new Object[] { response.rawStatusCode() }))
-				.onStatus(HttpStatus::is4xxClientError,
+								new Object[] { response.statusCode() }))
+				.onStatus(status4xxPredicate,
 						response -> ErrorPublisher.raiseResourceNotFoundError("client.error",
-								new Object[] { response.rawStatusCode() }))
+								new Object[] { response.statusCode() }))
 				.bodyToMono(String.class).retryWhen(Retry.backoff(3, Duration.ofSeconds(5))
 						.filter(throwable -> throwable instanceof ServiceUnavailableException));
 	}
@@ -203,14 +206,11 @@ public class WebClientUsage {
 	public Mono<String> getDataHandlExhaustedRetry(String stockId) {
 
 		return webClient.get().uri("https://baeldung.com/path", stockId).retrieve()
-				.onStatus(HttpStatus::is5xxServerError,
+				.onStatus(status5xxPredicate,
 						response -> ErrorPublisher.raiseServiceUnavailableError("server.error",
-								new Object[] { response.rawStatusCode() }))
+								new Object[] { response.statusCode() }))
 				.bodyToMono(String.class)
-				.retryWhen(Retry.backoff(3, Duration.ofSeconds(5))
-						.filter(throwable -> throwable instanceof ServiceUnavailableException).onRetryExhaustedThrow(
-								(retryBackoffSpec, retrySignal) -> ErrorPublisher.raiseServiceUnavailableException(
-										"server.maxRetry.error", new Object[] { HttpStatus.SERVICE_UNAVAILABLE.value() })));
+				.retryWhen(retryServerError());
 	}
 	
 	/**
@@ -219,16 +219,16 @@ public class WebClientUsage {
 	 * @return
 	 */
 	public Mono<String> getDataWithOverridingBearerToken(String stockId, String overridingToken) {
-
+		
 		return webClient.get().uri("https://baeldung.com/path", stockId)
 				.headers(headers -> headers.setBearerAuth(overridingToken))
 				.retrieve()
-				.onStatus(HttpStatus::is5xxServerError,
+				.onStatus(status4xxPredicate,
 						response -> ErrorPublisher.raiseServiceUnavailableError("server.error",
-								new Object[] { response.rawStatusCode() }))
-				.onStatus(HttpStatus::is4xxClientError,
+								new Object[] { response.statusCode() }))
+				.onStatus(status4xxPredicate,
 						response -> ErrorPublisher.raiseResourceNotFoundError("client.error",
-								new Object[] { response.rawStatusCode() }))
+								new Object[] { response.statusCode() }))
 				.bodyToMono(String.class)
 				//
 				.retryWhen(Retry.backoff(3, Duration.ofSeconds(5))
@@ -340,5 +340,26 @@ public class WebClientUsage {
 		    .build();
 		 */		
 	}
+	
+	private RetryBackoffSpec retryServerError() {
+	    return Retry.backoff(3, Duration.of(100, ChronoUnit.MILLIS))
+	            .filter(this::isServerError)
+	            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> {
+	              HttpServerErrorException webException = (HttpServerErrorException) retrySignal.failure();
+	                HttpStatusCode statusCode = webException.getStatusCode();
+	                String responseBodyAsString = webException.getResponseBodyAsString();
+	                /*
+	                ErrorPublisher.raiseServiceUnavailableException(
+							"server.maxRetry.error", new Object[] { HttpStatus.SERVICE_UNAVAILABLE.value() });
+							*/
+	                log.error("Status code: {}; Response body: {}", responseBodyAsString, statusCode);
+	                //whatever you want to do with it
+	                return retrySignal.failure();
+	            });
+	 }
 
+	 private boolean isServerError(Throwable throwable) {
+	    return throwable instanceof HttpServerErrorException |
+	    		throwable instanceof ServiceUnavailableException;
+	 }
 }

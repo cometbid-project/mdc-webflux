@@ -6,9 +6,6 @@ package com.ndportmann.mdc_webflux.error.handler;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 import com.ndportmann.mdc_webflux.exceptions.ApplicationDefinedRuntimeException;
 import com.ndportmann.mdc_webflux.exceptions.BadRequestException;
 import com.ndportmann.mdc_webflux.exceptions.ResourceAlreadyExistException;
@@ -16,6 +13,8 @@ import com.ndportmann.mdc_webflux.exceptions.ResourceNotFoundException;
 import com.ndportmann.mdc_webflux.exceptions.ServiceException;
 import com.ndportmann.mdc_webflux.exceptions.ServiceUnavailableException;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 /*
 import com.cometbid.oauth2.demo.exceptions.ApplicationDefinedRuntimeException;
 import com.cometbid.oauth2.demo.exceptions.AuthenticationError;
