@@ -5,7 +5,6 @@ package com.ndportmann.mdc_webflux.controller;
 
 import java.net.URI;
 
-import javax.annotation.PostConstruct;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ import com.ndportmann.mdc_webflux.config.AuthClientProperties;
 import com.ndportmann.mdc_webflux.helpers.ApiPaths;
 import com.ndportmann.mdc_webflux.service.model.EmployeeModel;
 
+import jakarta.annotation.PostConstruct;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

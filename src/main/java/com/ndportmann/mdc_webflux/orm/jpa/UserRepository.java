@@ -11,7 +11,7 @@ import org.springframework.data.repository.CrudRepository;
  * @author Gbenga
  *
  */
-public interface UserRepository extends CrudRepository<User, UUID>, UserRepositoryCustom {
+public interface UserRepository extends CrudRepository<User, UserId>, UserRepositoryCustom {
 	
 	Optional<User> findByEmailIgnoreCase(String email);
 }

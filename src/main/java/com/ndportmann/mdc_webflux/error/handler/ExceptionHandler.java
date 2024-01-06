@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.function.Function;
 //import javax.ws.rs.ClientErrorException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 /*
@@ -37,6 +38,7 @@ import com.ndportmann.mdc_webflux.exceptions.ResourceNotFoundException;
 import com.ndportmann.mdc_webflux.exceptions.ServiceException;
 import com.ndportmann.mdc_webflux.exceptions.ServiceUnavailableException;
 
+import static org.springframework.http.HttpStatus.*;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Mono;
 
@@ -50,24 +52,23 @@ public class ExceptionHandler {
 	private static Integer UNKNOWN_ERRORCODE = 501;
 
 	/*
-	public static <T> Function<? super Throwable, ? extends Mono<? extends T>> handleWebFluxError(String genericMsg) {
+	 * public static <T> Function<? super Throwable, ? extends Mono<? extends T>>
+	 * handleWebFluxError(String genericMsg) {
+	 * 
+	 * return error -> { if (error instanceof ClientErrorException || error
+	 * instanceof AuthenticationError || error instanceof UserAlreadyExistException
+	 * || error instanceof UserProfileDisabledException || error instanceof
+	 * UserProfileExpiredException || error instanceof UserProfileLockedException ||
+	 * error instanceof UserProfileUnverifiedException || error instanceof
+	 * UnusualLocationException || error instanceof UnauthenticatedUserException ||
+	 * error instanceof SessionExpiredException || error instanceof
+	 * ResourceNotFoundException) {
+	 * 
+	 * return Mono.error(error); }
+	 * 
+	 * return raiseRuntimeError(genericMsg, error); }; }
+	 */
 
-		return error -> {
-			if (error instanceof ClientErrorException || error instanceof AuthenticationError
-					|| error instanceof UserAlreadyExistException || error instanceof UserProfileDisabledException
-					|| error instanceof UserProfileExpiredException || error instanceof UserProfileLockedException
-					|| error instanceof UserProfileUnverifiedException || error instanceof UnusualLocationException
-					|| error instanceof UnauthenticatedUserException || error instanceof SessionExpiredException
-					|| error instanceof ResourceNotFoundException) {
-
-				return Mono.error(error);
-			}
-
-			return raiseRuntimeError(genericMsg, error);
-		};
-	}
-	*/
-	
 	public static <T, R> Function<T, Mono<R>> handleCheckedExceptionFunction(
 			LambdaCheckedExceptionFunction<T, R> handlerFunction) {
 
@@ -92,7 +93,7 @@ public class ExceptionHandler {
 	}
 
 	public static <R> Mono<R> processResponse(ClientResponse clientResponse, Class<? extends R> clazzResponse) {
-		HttpStatus status = clientResponse.statusCode();
+		HttpStatusCode status = clientResponse.statusCode();
 
 		Mono<R> respObj = Mono.empty();
 
@@ -114,8 +115,7 @@ public class ExceptionHandler {
 
 				return clientResponse.createException().flatMap(ex -> {
 
-					return raiseServiceExceptionError(clientResponse.statusCode().getReasonPhrase(),
-							clientResponse.rawStatusCode());
+					return raiseServiceExceptionError(ex.getMessage(), clientResponse.statusCode().value());
 				});
 			}
 		}
@@ -132,8 +132,9 @@ public class ExceptionHandler {
 		}
 
 		WebClientResponseException wcre = (WebClientResponseException) ex;
+		HttpStatus httpStatus = HttpStatus.valueOf(wcre.getStatusCode().value());
 
-		switch (wcre.getStatusCode()) {
+		switch (httpStatus) {
 
 		case SERVICE_UNAVAILABLE:
 
@@ -148,7 +149,7 @@ public class ExceptionHandler {
 			log.warn("Got a unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
 			log.warn("Error body: {}", wcre.getResponseBodyAsString());
 
-			return new ServiceException(wcre.getMessage(), wcre.getRawStatusCode());
+			return new ServiceException(wcre.getMessage(), wcre.getStatusCode().value());
 		}
 	}
 
@@ -161,8 +162,9 @@ public class ExceptionHandler {
 		}
 
 		WebClientResponseException wcre = (WebClientResponseException) ex;
+		HttpStatus httpStatus = HttpStatus.valueOf(wcre.getStatusCode().value());
 
-		switch (wcre.getStatusCode()) {
+		switch (httpStatus) {
 
 		case NOT_FOUND:
 
@@ -178,7 +180,7 @@ public class ExceptionHandler {
 			log.warn("Got a unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
 			log.warn("Error body: {}", wcre.getResponseBodyAsString());
 
-			return new ServiceException(wcre.getMessage(), wcre.getRawStatusCode());
+			return new ServiceException(wcre.getMessage(), wcre.getStatusCode().value());
 		}
 	}
 
@@ -186,11 +188,11 @@ public class ExceptionHandler {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			AppResponse appResponse = mapper.readValue(ex.getResponseBodyAsString(), AppResponse.class);
-			
-			ApiError apiError = (ApiError)appResponse.getApiResponse();
-			
+
+			ApiError apiError = (ApiError) appResponse.getApiResponse();
+
 			return apiError.getMessage();
-			
+
 		} catch (IOException ioex) {
 			return ex.getMessage();
 		}

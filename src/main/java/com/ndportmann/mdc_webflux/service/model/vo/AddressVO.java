@@ -5,8 +5,6 @@ package com.ndportmann.mdc_webflux.service.model.vo;
 
 import java.util.Map;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import org.springframework.data.redis.core.index.GeoIndexed;
 import org.springframework.data.redis.core.index.Indexed;
@@ -16,6 +14,8 @@ import com.ndportmann.mdc_webflux.service.model.Order;
 import com.ndportmann.mdc_webflux.service.model.Point;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

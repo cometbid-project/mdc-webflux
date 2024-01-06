@@ -6,9 +6,9 @@ package com.ndportmann.mdc_webflux.service.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.annotation.Transient;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Gbenga

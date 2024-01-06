@@ -3,8 +3,6 @@
  */
 package com.ndportmann.mdc_webflux.config;
 
-import javax.annotation.PreDestroy;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +23,8 @@ import org.springframework.session.data.redis.config.annotation.web.server.Enabl
 
 import com.ndportmann.mdc_webflux.service.model.Person;
 import com.ndportmann.mdc_webflux.service.model.UserData;
+
+import jakarta.annotation.PreDestroy;
 
 /**
  * @author Gbenga

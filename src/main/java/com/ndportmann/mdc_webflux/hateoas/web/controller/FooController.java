@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +51,8 @@ public class FooController {
 
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
+	
+	private Sort DEFAULT_SORT = Sort.unsorted();
 
 	@Autowired
 	private IFooService service;
@@ -66,7 +69,8 @@ public class FooController {
 	public ResponseEntity<Foo> findByIdWithCustomEtag(@PathVariable("id") final Long id,
 			final ServerWebExchange webExchange) {
 		
-		final Foo foo = RestPreconditions.checkFound(service.findById(id));
+		final var newId = service.createId(id);
+		final Foo foo = RestPreconditions.checkFound(service.findById(newId));
 
 		eventPublisher.publishEvent(new SingleResourceRetrievedEvent(this, webExchange));
 		return ResponseEntity.ok().eTag(Long.toString(foo.getVersion())).body(foo);
@@ -77,7 +81,8 @@ public class FooController {
 	@GetMapping(value = "/{id}")
 	public Foo findById(@PathVariable("id") final Long id, final ServerWebExchange webExchange) {
 		try {
-			final Foo resourceById = RestPreconditions.checkFound(service.findById(id));
+			final var newId = service.createId(id);
+			final Foo resourceById = RestPreconditions.checkFound(service.findById(newId));
 
 			eventPublisher.publishEvent(new SingleResourceRetrievedEvent(this, webExchange));
 			return resourceById;
@@ -89,7 +94,7 @@ public class FooController {
 	// read - all
 	@GetMapping
 	public List<Foo> findAll() {
-		return service.findAll();
+		return service.findAll(DEFAULT_SORT);
 	}
 
 	@GetMapping(params = { "page", "size" })
@@ -126,8 +131,9 @@ public class FooController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public Foo create(@RequestBody final Foo resource, final ServerWebExchange webExchange) {
 		Preconditions.checkNotNull(resource);
+		
 		final Foo foo = service.create(resource);
-		final String idOfCreatedResource = foo.getId();
+		final String idOfCreatedResource = foo.getId().asString();
 
 		eventPublisher.publishEvent(new ResourceCreatedEvent(this, webExchange, idOfCreatedResource));
 
@@ -138,14 +144,19 @@ public class FooController {
 	@ResponseStatus(HttpStatus.OK)
 	public void update(@PathVariable("id") final Long id, @RequestBody final Foo resource) {
 		Preconditions.checkNotNull(resource);
-		RestPreconditions.checkFound(service.findById(id));
+		
+		final var newId = service.createId(id);
+		RestPreconditions.checkFound(service.findById(newId));
 		service.update(resource);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public void delete(@PathVariable("id") final Long id) {
-		service.deleteById(id);
+		
+		final var newId = service.createId(id);
+		
+		service.deleteById(newId);
 	}
 
 	@ExceptionHandler({ ResourceNotFoundException.class, BadRequestException.class })

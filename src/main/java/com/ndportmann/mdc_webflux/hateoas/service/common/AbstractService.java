@@ -8,57 +8,65 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
+import com.ndportmann.mdc_webflux.orm.jpa.FooId;
 
 /**
  * @author Gbenga
  *
  */
 @Transactional
-public abstract class AbstractService<T extends Serializable> implements IOperations<T> {
+public abstract class AbstractService<T extends Serializable, U> implements IOperations<T, U> {
 
-    // read - one
-    @Override
-    @Transactional(readOnly = true)
-    public T findById(final Long id) {
-        return getDao().findById(id).orElse(null);
-    }
+	public FooId createId(String id) {
+		return new FooId(id);
+	}
 
-    // read - all
-    @Override
-    @Transactional(readOnly = true)
-    public List<T> findAll() {
-        return Lists.newArrayList(getDao().findAll());
-    }
+	public FooId createId(Long id) {
+		return new FooId(String.valueOf(id));
+	}
 
-    @Override
-    public Page<T> findPaginated(final int page, final int size) {
-        return getDao().findAll(PageRequest.of(page, size));
-    }
+	// read - one
+	@Override
+	@Transactional(readOnly = true)
+	public T findById(final U id) {
+		return getDao().findById(id).orElse(null);
+	}
 
-    // write    
-    @Override
-    public T create(final T entity) {
-        return getDao().save(entity);
-    }
-    
-    @Override
-    public T update(final T entity) {
-        return getDao().save(entity);
-    }
+	// read - all
+	/*
+	 * @Override
+	 * 
+	 * @Transactional(readOnly = true) public List<T> findAll() { return
+	 * Lists.newArrayList(getDao().findAll()); }
+	 */
 
-    @Override
-    public void delete(final T entity) {
-        getDao().delete(entity);
-    }
+	// write
+	@Override
+	public T create(final T entity) {
+		return getDao().save(entity);
+	}
 
-    @Override
-    public void deleteById(final long entityId) {
-        getDao().deleteById(entityId);
-    }
+	@Override
+	public T update(final T entity) {
+		return getDao().save(entity);
+	}
 
-    protected abstract PagingAndSortingRepository<T, Long> getDao();
+	@Override
+	public void delete(final T entity) {
+		getDao().delete(entity);
+	}
+
+	@Override
+	public void deleteById(final U entityId) {
+		getDao().deleteById(entityId);
+	}
+
+	protected abstract ListCrudRepository<T, U> getDao();
 
 }

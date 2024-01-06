@@ -20,7 +20,6 @@ public class ResourceAlreadyExistException extends ApplicationDefinedRuntimeExce
 	 */
 	private static final long serialVersionUID = -7269022439669139584L;
 
-	@Getter
 	private int statusCode;
 
 	private static final HttpStatus STATUS = HttpStatus.CONFLICT;

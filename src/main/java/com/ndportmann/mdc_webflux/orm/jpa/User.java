@@ -4,14 +4,14 @@
 package com.ndportmann.mdc_webflux.orm.jpa;
 
 //import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ndportmann.mdc_webflux.service.model.Role;
+
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Collection;
 import java.util.Set;

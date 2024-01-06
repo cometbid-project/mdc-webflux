@@ -16,6 +16,10 @@ import javax.persistence.Id;
 import javax.persistence.Version;
 */
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.ndportmann.mdc_webflux.orm.jpa.AbstractEntity;
+import com.ndportmann.mdc_webflux.orm.jpa.FooId;
+import com.ndportmann.mdc_webflux.orm.jpa.UserId;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -25,16 +29,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("Foo")
 //@Entity
 @Document
-public class Foo implements Serializable {
+public class Foo extends AbstractEntity<FooId> implements Serializable {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = -5701622696964785110L;
 
-	@Id
+	//@Id
    // @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+   // private String id;
 
    // @Column(nullable = false)
     private String name;
@@ -54,6 +58,7 @@ public class Foo implements Serializable {
 
     // API
 
+    /*
     public String getId() {
         return id;
     }
@@ -61,6 +66,7 @@ public class Foo implements Serializable {
     public void setId(final String id) {
         this.id = id;
     }
+    */
 
     public String getName() {
         return name;
@@ -79,7 +85,7 @@ public class Foo implements Serializable {
     }
     
     //
-
+    /*
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -104,10 +110,14 @@ public class Foo implements Serializable {
             return false;
         return true;
     }
+    */
 
     @Override
     public String toString() {
+    	
         final StringBuilder builder = new StringBuilder();
+        builder.append(super.toString());
+        builder.append(" ");
         builder.append("Foo [name=").append(name).append("]");
         return builder.toString();
     }

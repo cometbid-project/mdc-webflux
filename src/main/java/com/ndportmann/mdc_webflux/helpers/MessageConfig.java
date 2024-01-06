@@ -3,8 +3,6 @@
  */
 package com.ndportmann.mdc_webflux.helpers;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +11,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 
 /**

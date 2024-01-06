@@ -31,7 +31,7 @@ import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 /**
  * 
